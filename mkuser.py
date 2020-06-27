@@ -125,6 +125,10 @@ def main():
 
     args = parser.parse_args()
 
+    if os.getuid() != 0:
+        sys.stderr.write('This script requires root access')
+        sys.exit(1)
+
     # Check tha the user doesn't exist
     if get_username(args.username):
         sys.stderr.write('User %s already exists\n' % args.username)
