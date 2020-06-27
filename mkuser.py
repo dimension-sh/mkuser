@@ -69,14 +69,14 @@ def generate_password(length=8):
 
 def set_user_password(username, password):
     """ Sets a user's password """
-    proc = subprocess.Popen(['chpasswd'], stdin=subprocess.PIPE, capture_output=True)
+    proc = subprocess.Popen(['chpasswd'], stdin=subprocess.PIPE)
     proc.communicate(("%s:%s\n" % (username, password)).encode("utf-8"))
 
 
 def add_ssh_key(username, sshkey):
     """ Adds the provided SSH key to the user's authorized_keys file """
     user = get_username(username)
-    ssh_folder = os.path.join(user.pw_dir), '.ssh'
+    ssh_folder = os.path.join(user.pw_dir, '.ssh')
     key_file = os.path.join(ssh_folder, 'authorized_keys')
     try:
         os.mkdir(ssh_folder)
@@ -84,8 +84,9 @@ def add_ssh_key(username, sshkey):
         pass
     os.chmod(ssh_folder, 0o700)
     os.chown(ssh_folder, user.pw_uid, user.pw_gid)
-    with open(key_file, 'ab') as fobj:
-        fobj .write(sshkey + '\n')
+    with open(key_file, 'a') as fobj:
+        fobj.write(sshkey + '\n')
+    os.chown(key_file, user.pw_uid, user.pw_gid)
     os.chmod(key_file, 0o600)
 
 
@@ -99,8 +100,7 @@ def send_welcome_mail(username, mail_data):
 
     with open('/etc/mkuser/welcome_mail.tmpl') as fobj:
         content = Template(fobj.read())
-    content.safe_substitute(**mail_data)
-    msg.set_content(content)
+    msg.set_content(content.safe_substitute(**mail_data))
 
     msg['From'] = 'root'
     msg['To'] = username
@@ -128,7 +128,7 @@ def main():
         sys.exit(1)
 
     res = validate_sshkey(args.sshkey)
-    if res:
+    if res != True:
         sys.stderr.write('SSH key invalid: %s' % res)
         sys.exit(1)
 
