@@ -14,6 +14,10 @@ import pathlib
 import socket
 
 
+__author__ = 'Andrew Williams <nikdoof@dimension.sh>'
+__version__ = '1.0.0'
+
+
 def validate_sshkey(keystring):
     """ Validates that SSH pubkey string is valid """
     # do we have 3 fields?
@@ -113,10 +117,11 @@ def send_welcome_mail(address, mail_data):
 
 
 def main():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser('mkuser')
     parser.add_argument('username', help='Username of the new user')
     parser.add_argument('email', help='Email address to send the welcome mail to')
     parser.add_argument('sshkey', help='SSH public key')
+    parser.add_argument('-v', '--version', action='version', version='%(prog)s ' + __version__)
 
     args = parser.parse_args()
 
