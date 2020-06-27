@@ -11,6 +11,7 @@ import subprocess
 import secrets
 import string
 import pathlib
+import socket
 
 
 def validate_sshkey(keystring):
@@ -90,7 +91,7 @@ def add_ssh_key(username, sshkey):
     os.chmod(key_file, 0o600)
 
 
-def send_welcome_mail(username, mail_data):
+def send_welcome_mail(address, mail_data):
     """ Emails out a welcome email to the user """
     import smtplib
     from email.message import EmailMessage
@@ -103,7 +104,7 @@ def send_welcome_mail(username, mail_data):
     msg.set_content(content.safe_substitute(**mail_data))
 
     msg['From'] = 'root'
-    msg['To'] = username
+    msg['To'] = address
     msg['Subject'] = 'Welcome to dimension.sh'
 
     s = smtplib.SMTP('localhost')
@@ -114,6 +115,7 @@ def send_welcome_mail(username, mail_data):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('username')
+    parser.add_argument('email')
     parser.add_argument('sshkey')
 
     args = parser.parse_args()
@@ -141,10 +143,12 @@ def main():
     add_ssh_key(user.pw_name, args.sshkey)
 
     # Send the welcome mail
-    send_welcome_mail(user.pw_name, {
-        'username': user.pw_name,
-        'password': password,
-    })
+    for address in (args.email, user.pw_name):
+        send_welcome_mail(address, {
+            'username': user.pw_name,
+            'password': password,
+            'hostname': socket.getfqdn(),
+        })
 
 if __name__ == '__main__':
     main()
