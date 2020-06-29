@@ -1,0 +1,64 @@
+.TH MKUSER 1
+.SH NAME
+mkuser \- a tool to ease the creation of tilde users
+.SH SYNOPSIS
+.B mkuser
+[\fB\-c\fR \fIconfig\fP]
+[\fB\-v\fR]
+[\fB\-h\fR]
+.IR username
+.IR email
+.IR sshkey
+.SH DESCRIPTION
+\fBmkuser\fP creates a user, writes a ssh key to the authorized_keys file for the user, and sends a welcome email.
+.SH OPTIONS
+.TP
+.B \-c
+Path to a configuration file, defaults to /etc/mkuser/mkuser.yaml
+.TP
+.B \-v
+Shows the version of mkuser
+.TP
+.B \-h
+Shows the usage information for the command
+.SH FILES
+\fBmkuser\fP's configuration is held in /etc/mkuser, with all configuration values being held in mkuser.yaml
+.SH SETTINGS
+The following is a list of settings that \fBmkuser\fP recognizes in the mkuser.yaml file.
+.TP
+.B
+site_name
+The name of the site to use in the welcome email
+.TP
+.B
+site_url
+The URL for the site, this will be used to generate the public_html location in the welcome email, for example: https://example.com.
+.TP
+.B
+site_contact
+A contact email address to be provided in the welcome email.
+.TP
+.B
+mail_template
+The location of the template to use for the welcome email, defaults to: /etc/mkuser/mail.tmpl.
+.TP
+.B
+mail_subject
+The subject to use for the welcome email.
+.TP
+.B
+mail_from
+The from address to use on the welcome email.
+.TP
+.B
+mail_sig
+The signature signoff to use on the welcome email.
+.SH BUGS
+Bugs will exist with this tool, issues can be raised on the \fBmkuser\fP repository on Github (see \fIlinks\fP).
+.SH LINKS
+.TP
+.B
+Source Repository
+http://github.com/dimension-sh/mkuser
+.SH AUTHORS
+\fBmkuser\fP was developed by nikdoof.

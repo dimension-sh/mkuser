@@ -14,9 +14,11 @@ import pathlib
 import socket
 import shutil
 
+import yaml
+
 
 __author__ = 'Andrew Williams <nikdoof@dimension.sh>'
-__version__ = '1.0.1'
+__version__ = '1.1.0'
 
 
 def validate_sshkey(keystring):
@@ -112,13 +114,13 @@ def send_welcome_mail(address, mail_data):
 
     msg = EmailMessage()
 
-    with open('/etc/mkuser/welcome_mail.tmpl') as fobj:
+    with open(mail_data.get('mail_template', '/etc/mkuser/mail.tmpl')) as fobj:
         content = Template(fobj.read())
     msg.set_content(content.safe_substitute(**mail_data))
 
-    msg['From'] = 'root'
+    msg['From'] = mail_data.get('mail_from', 'root')
     msg['To'] = address
-    msg['Subject'] = 'Welcome to dimension.sh'
+    msg['Subject'] = mail_data.get('mail_subject', 'Welcome!')
 
     s = smtplib.SMTP('localhost')
     s.send_message(msg)
@@ -130,12 +132,21 @@ def main():
     parser.add_argument('username', help='Username of the new user')
     parser.add_argument('email', help='Email address to send the welcome mail to')
     parser.add_argument('sshkey', help='SSH public key')
+    parser.add_argument('-c', '--config', help='Location of the configuration file to use', default='/etc/mkuser/mkuser.yaml')
     parser.add_argument('-v', '--version', action='version', version='%(prog)s ' + __version__)
 
     args = parser.parse_args()
 
     if os.getuid() != 0:
         sys.stderr.write('This script requires root access')
+        sys.exit(1)
+
+    config_file = os.path.expandvars(args.config)
+    if os.path.exists(config_file):
+        with open(config_file, 'r') as fobj:
+            config = yaml.load(fobj)
+    else:
+        sys.stderr.write('%s does not exist, exiting...' % config_file)
         sys.exit(1)
 
     # Check tha the user doesn't exist
@@ -161,12 +172,14 @@ def main():
     add_ssh_key(user.pw_name, args.sshkey)
 
     # Send the welcome mail
+    mail_data = config.copy()
+    mail_data.update({
+        'username': user.pw_name,
+        'password': password,
+        'hostname': socket.getfqdn(),
+    })
     for address in (args.email, user.pw_name):
-        send_welcome_mail(address, {
-            'username': user.pw_name,
-            'password': password,
-            'hostname': socket.getfqdn(),
-        })
+        send_welcome_mail(address, mail_data)
 
 if __name__ == '__main__':
     main()
