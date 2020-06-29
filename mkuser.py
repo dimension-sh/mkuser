@@ -12,10 +12,11 @@ import secrets
 import string
 import pathlib
 import socket
+import shutil
 
 
 __author__ = 'Andrew Williams <nikdoof@dimension.sh>'
-__version__ = '1.0.0'
+__version__ = '1.0.1'
 
 
 def validate_sshkey(keystring):
@@ -64,7 +65,15 @@ def get_username(username):
 def create_user(username):
     """ Create a user, using 'useradd', then check the results """
     subprocess.run(['useradd', username])
-    return get_username(username)
+    user = get_username(username)
+
+    # if /etc/skel is a git repo, catch and delete the .git files
+    if user:
+        git_folder = os.path.join(user.pw_dir, '.git')
+        if os.path.exists(git_folder):
+            shutil.rmtree(git_folder)
+
+    return user
 
 
 def generate_password(length=8):
