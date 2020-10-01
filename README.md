@@ -4,9 +4,9 @@
 
 ## Configuration
 
-`mkuser` uses the OS defined configuration for the `useradd` command. On a Redhat derrived system this will be in `/etc/login.defs`. No configuration for the user is held by any `mkuser` file.
+`mkuser` uses the OS defined configuration for the `useradd` command. On a Redhat derived system this will be in `/etc/login.defs`. No configuration for the user is held by any `mkuser` file.
 
-The email template must be located at `/etc/mkuser/welcome_email.tmpl` and it uses Python's string Template format. Further details on the synax can be found within the [Python documentation](https://docs.python.org/3/library/string.html#template-strings).
+The email template must be located at `/etc/mkuser/welcome_email.tmpl` and it uses Python's string Template format. Further details on the syntax can be found within the [Python documentation](https://docs.python.org/3/library/string.html#template-strings).
 
 ## Usage
 
