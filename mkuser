@@ -18,23 +18,32 @@ import yaml
 
 
 __author__ = 'Andrew Williams <nikdoof@dimension.sh>'
-__version__ = '1.1.0'
+__version__ = '1.1.1'
+
+VALID_SSH_KEYTYPES = [
+    'sk-ecdsa-sha2-nistp256@openssh.com',
+    'ecdsa-sha2-nistp256',
+    'ecdsa-sha2-nistp384',
+    'ecdsa-sha2-nistp521',
+    'sk-ssh-ed25519@openssh.com',
+    'ssh-ed25519',
+    'ssh-rsa',
+]
 
 
 def validate_sshkey(keystring):
     """ Validates that SSH pubkey string is valid """
     # do we have 3 fields?
     fields = len(keystring.split(' '))
-    if fields < 2 or fields > 3:
+    if fields < 2:
         return 'Incorrect number of fields (%d)' % fields
-
-    if fields == 2:
-        keytype, pubkey = keystring.split(' ')
-    if fields == 3:
-        keytype, pubkey, _ = keystring.split(' ')
+    else:
+        fsplit = keystring.split(' ')
+        keytype = fsplit[0]
+        pubkey = fsplit[1]
 
     # Check it is a valid type
-    if not keytype in ['ssh-rsa', 'ssh-ed25519']:
+    if not keytype in VALID_SSH_KEYTYPES:
         return 'Invalid keytype'
 
     # Decode the key data from Base64
@@ -52,7 +61,6 @@ def validate_sshkey(keystring):
     # Keytype is encoded and must match
     if not data[4:4+str_len].decode('ascii') == keytype:
         return 'Embedded keytype does not match declared keytype (%s vs %s)' % (data[4:4+str_len].decode('ascii'), keytype)
-
     return True
 
 
@@ -180,6 +188,7 @@ def main():
     })
     for address in (args.email, user.pw_name):
         send_welcome_mail(address, mail_data)
+
 
 if __name__ == '__main__':
     main()
