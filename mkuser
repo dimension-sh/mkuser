@@ -10,9 +10,9 @@ import pwd
 import subprocess
 import secrets
 import string
-import pathlib
 import socket
 import shutil
+import glob
 
 import yaml
 
@@ -134,6 +134,12 @@ def send_welcome_mail(address, mail_data):
     s.send_message(msg)
     s.quit()
 
+def run_commandset(folder, username):
+    """ Runs a set of executables in a folder """
+    if os.path.exists(folder) and os.path.isdir(folder):
+        for fname in glob.glob(os.path.join(os.path.abspath(folder),'*')):
+            if os.path.isfile(fname) and os.access(fname, os.X_OK):
+                subprocess.call([fname, username])
 
 def main():
     parser = argparse.ArgumentParser('mkuser')
@@ -171,6 +177,9 @@ def main():
         sys.stderr.write('SSH key invalid: %s' % res)
         sys.exit(1)
 
+    # Run pre-creation commands
+    run_commandset(config.get('pre_folder', '/etc/mkuser/pre.d'))
+
     # Create the user
     password = generate_password()
     user = create_user(args.username)
@@ -189,6 +198,8 @@ def main():
     for address in (args.email, user.pw_name):
         send_welcome_mail(address, mail_data)
 
+    # Run post-creation commands
+    run_commandset(config.get('post_folder', '/etc/mkuser/pre.d'))
 
 if __name__ == '__main__':
     main()
