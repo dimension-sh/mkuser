@@ -178,7 +178,7 @@ def main():
         sys.exit(1)
 
     # Run pre-creation commands
-    run_commandset(config.get('pre_folder', '/etc/mkuser/pre.d'))
+    run_commandset(config.get('pre_folder', '/etc/mkuser/pre.d'), args.username)
 
     # Create the user
     password = generate_password()
@@ -199,7 +199,7 @@ def main():
         send_welcome_mail(address, mail_data)
 
     # Run post-creation commands
-    run_commandset(config.get('post_folder', '/etc/mkuser/pre.d'))
+    run_commandset(config.get('post_folder', '/etc/mkuser/pre.d'), args.username)
 
 if __name__ == '__main__':
     main()
