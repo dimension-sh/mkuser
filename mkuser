@@ -36,7 +36,7 @@ def validate_sshkey(keystring):
     # do we have 3 fields?
     fields = len(keystring.split(' '))
     if fields < 2:
-        return 'Incorrect number of fields (%d)' % fields
+        return 'Incorrect number of fields provided (%d)' % fields
     else:
         fsplit = keystring.split(' ')
         keytype = fsplit[0]
@@ -44,28 +44,28 @@ def validate_sshkey(keystring):
 
     # Check it is a valid type
     if not keytype in VALID_SSH_KEYTYPES:
-        return 'Invalid keytype'
+        return 'Key has an invalid key type'
 
     # Decode the key data from Base64
     try:
         data = base64.decodebytes(pubkey.encode())
     except binascii.Error:
-        return 'Error decoding the pubkey'
+        return 'Error decoding the SSH public key'
 
     # Get the length from the data
     try:
         str_len = struct.unpack('>I', data[:4])[0]
     except struct.error:
-        return 'Error aquiring key length'
+        return 'Error acquiring the public key length'
 
     # Keytype is encoded and must match
     if not data[4:4+str_len].decode('ascii') == keytype:
-        return 'Embedded keytype does not match declared keytype (%s vs %s)' % (data[4:4+str_len].decode('ascii'), keytype)
+        return 'Embedded keytype does not match declared key type (%s vs %s)' % (data[4:4+str_len].decode('ascii'), keytype)
     return True
 
 
 def get_username(username):
-    """ Retreives the user from passwd """
+    """ Retrieves the user from passwd """
     try:
         return pwd.getpwnam(username)
     except KeyError:
@@ -114,7 +114,7 @@ def add_ssh_key(username, sshkey):
     os.chmod(key_file, 0o600)
 
 
-def send_welcome_mail(address, mail_data):
+def send_welcome_mail(address, mail_data, smtp_server='localhost'):
     """ Emails out a welcome email to the user """
     import smtplib
     from email.message import EmailMessage
@@ -130,7 +130,7 @@ def send_welcome_mail(address, mail_data):
     msg['To'] = address
     msg['Subject'] = mail_data.get('mail_subject', 'Welcome!')
 
-    s = smtplib.SMTP('localhost')
+    s = smtplib.SMTP(smtp_server)
     s.send_message(msg)
     s.quit()
 
@@ -143,9 +143,9 @@ def run_commandset(folder, username):
 
 def main():
     parser = argparse.ArgumentParser('mkuser')
-    parser.add_argument('username', help='Username of the new user')
-    parser.add_argument('email', help='Email address to send the welcome mail to')
-    parser.add_argument('sshkey', help='SSH public key')
+    parser.add_argument('username', help='Username of the new user', required=True)
+    parser.add_argument('email', help='The user\'s email address', required=True)
+    parser.add_argument('sshkey', help='The user\'s SSH public key', required=True)
     parser.add_argument('-c', '--config', help='Location of the configuration file to use', default='/etc/mkuser/mkuser.yaml')
     parser.add_argument('-v', '--version', action='version', version='%(prog)s ' + __version__)
 
@@ -160,7 +160,7 @@ def main():
         with open(config_file, 'r') as fobj:
             config = yaml.load(fobj)
     else:
-        sys.stderr.write('%s does not exist, exiting...' % config_file)
+        sys.stderr.write('Configuration file %s does not exist\n' % config_file)
         sys.exit(1)
 
     # Check tha the user doesn't exist
@@ -169,12 +169,12 @@ def main():
         sys.exit(1)
 
     if args.sshkey.strip() == '':
-        sys.stderr.write('SSH key is blank')
+        sys.stderr.write('SSH key is blank\n')
         sys.exit(1)
 
     res = validate_sshkey(args.sshkey)
     if res != True:
-        sys.stderr.write('SSH key invalid: %s' % res)
+        sys.stderr.write('SSH key invalid: %s\n' % res)
         sys.exit(1)
 
     # Run pre-creation commands
