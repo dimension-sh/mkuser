@@ -18,7 +18,7 @@ import yaml
 
 
 __author__ = 'Andrew Williams <nikdoof@dimension.sh>'
-__version__ = '1.2.1'
+__version__ = '1.2.2'
 
 VALID_SSH_KEYTYPES = [
     'sk-ecdsa-sha2-nistp256@openssh.com',
