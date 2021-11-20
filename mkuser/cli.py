@@ -31,9 +31,9 @@ def error(message: str):
 def create_argparser() -> argparse.ArgumentParser:
     """Build a ArgumentParser instance for use with the CLI."""
     parser = argparse.ArgumentParser('mkuser')
-    parser.add_argument('username', help='Username of the new user', required=True)
-    parser.add_argument('email', help="The user's email address", required=True)
-    parser.add_argument('sshkey', help="The user's SSH public key", required=True)
+    parser.add_argument('username', help='Username of the new user')
+    parser.add_argument('email', help="The user's email address")
+    parser.add_argument('sshkey', help="The user's SSH public key")
     parser.add_argument('-c', '--config', help='Location of the configuration file to use', default='/etc/mkuser/mkuser.yaml')
     parser.add_argument('-v', '--version', action='version', version='mkuser {0}'.format(__version__))
     return parser
@@ -50,6 +50,9 @@ def load_config(config_file: str):
 
 def main():
     args = create_argparser().parse_args()
+
+    if not sys.platform.startswith('linux'):
+        error('mkuser only works on Linux systems')
 
     if os.getuid() != 0:
         error('mkuser requires root access')
