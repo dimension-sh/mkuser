@@ -97,4 +97,4 @@ def main():
         send_welcome_mail(address, template_filename, template_values)
 
     # Run post-creation commands
-    run_commandset(config.get('post_folder', '/etc/mkuser/pre.d'), args.username)
+    run_commandset(config.get('post_folder', '/etc/mkuser/post.d'), args.username)
