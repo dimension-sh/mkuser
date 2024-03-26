@@ -1,5 +1,7 @@
 # mkuser
 
+[![wemake-python-styleguide](https://img.shields.io/badge/style-wemake-000000.svg)](https://github.com/wemake-services/wemake-python-styleguide)
+
 `mkuser` is a simple tool to allow for the easy creation of users on a tilde style server.
 
 ## Configuration

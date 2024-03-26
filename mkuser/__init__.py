@@ -1,1 +1,3 @@
-__version__ = '2.0.2'  # noqa: WPS410
+import importlib.metadata
+
+__version__ = importlib.metadata.version("mkuser")

@@ -13,10 +13,7 @@ jobs:
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
       
       - uses: actions/setup-python@v5
-      - run: pip install -r requirements-dev.txt
-
-      - name: Build Assets
-        run:  python setup.py sdist bdist_wheel
+      - run: poetry build
 
       - name: Release
         uses: softprops/action-gh-release@v2
