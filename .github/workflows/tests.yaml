@@ -21,6 +21,7 @@ jobs:
         uses: snok/install-poetry@v1
       - name: Test with pytest
         run: |
+          source $VENV
           make tests
 
   lint:
@@ -38,4 +39,5 @@ jobs:
         uses: snok/install-poetry@v1
       - name: Lint with ruff
         run: |
+          source $VENV
           make lint
