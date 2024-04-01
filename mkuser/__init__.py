@@ -1,3 +1,1 @@
-import importlib.metadata
-
-__version__ = importlib.metadata.version("mkuser")
+__version__ = "2.0.2"
