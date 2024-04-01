@@ -9,5 +9,5 @@ def test_generate_password():
         assert len(passwd) == x
 
         # Check the passwords use the correct character sets
-        for l in passwd:
-            assert l in string.ascii_letters + string.digits
+        for letter in passwd:
+            assert letter in string.ascii_letters + string.digits
