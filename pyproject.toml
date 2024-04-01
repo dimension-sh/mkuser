@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mkuser"
-version = "2.0.2"
+version = "2.1.0"
 description = "`mkuser` is a simple tool to allow for the easy creation of users on a tilde style server."
 authors = ["Andrew Williams <andy@tensixtyone.com>"]
 license = "MIT"
