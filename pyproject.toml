@@ -1,25 +1,17 @@
-[tool.poetry]
+[project]
 name = "mkuser"
 version = "2.1.1"
 description = "`mkuser` is a simple tool to allow for the easy creation of users on a tilde style server."
-authors = ["Andrew Williams <andy@tensixtyone.com>"]
 license = "MIT"
 readme = "README.md"
+requires-python = ">=3.9"
+dependencies = ["pyyaml>=6.0.2"]
 
-[tool.poetry.scripts]
+[dependency-groups]
+dev = ["pytest>=8.4.1", "ruff>=0.12.9"]
+[project.scripts]
 mkuser = 'mkuser.cli:main'
 
-[tool.poetry.dependencies]
-python = "^3.9"
-pyyaml = ">= 5.4"
-
-[tool.poetry.group.test.dependencies]
-ruff = "^0.12.0"
-pytest = "^8.0.0"
-
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
-
-[tool.ruff]
-lint.ignore = ["E501"]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
